@@ -8,6 +8,7 @@ interface AuthStore extends AuthState {
   register: (credentials: RegisterCredentials) => Promise<void>;
   logout: () => void;
   clearError: () => void;
+  updateTwoFactorStatus: (enabled: boolean) => void;
 }
 
 // Mock users for demo purposes
@@ -17,6 +18,7 @@ const MOCK_USERS: User[] = [
     email: 'demo@example.com',
     name: 'Demo User',
     createdAt: new Date().toISOString(),
+    twoFactorEnabled: false,
   },
 ];
 
@@ -41,6 +43,14 @@ export const useAuthStore = create<AuthStore>()(
           // In a real app, you would verify the password here
           // For demo, we'll just check if the email exists and password is "password"
           if (user && credentials.password === 'password') {
+            // Check if 2FA is enabled
+            if (user.twoFactorEnabled) {
+              // In a real app, this would trigger a 2FA verification flow
+              // For demo, we'll just simulate it with a delay
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              console.log('2FA verification would happen here');
+            }
+            
             set({ 
               user, 
               isAuthenticated: true, 
@@ -98,6 +108,7 @@ export const useAuthStore = create<AuthStore>()(
             email: credentials.email,
             name: credentials.name,
             createdAt: new Date().toISOString(),
+            twoFactorEnabled: false,
           };
           
           // Add to mock users (in a real app, this would be an API call)
@@ -128,6 +139,26 @@ export const useAuthStore = create<AuthStore>()(
 
       clearError: () => {
         set({ error: null });
+      },
+      
+      updateTwoFactorStatus: (enabled: boolean) => {
+        const { user } = get();
+        
+        if (user) {
+          // Update the user in the store
+          set({ 
+            user: { 
+              ...user, 
+              twoFactorEnabled: enabled 
+            } 
+          });
+          
+          // Also update the user in the mock database
+          const userIndex = MOCK_USERS.findIndex(u => u.id === user.id);
+          if (userIndex !== -1) {
+            MOCK_USERS[userIndex].twoFactorEnabled = enabled;
+          }
+        }
       }
     }),
     {

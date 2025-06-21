@@ -3,6 +3,7 @@ export interface User {
   email: string;
   name: string;
   createdAt: string;
+  twoFactorEnabled?: boolean;
 }
 
 export interface AuthState {

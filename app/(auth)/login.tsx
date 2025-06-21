@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
   Alert,
   Switch,
-  ImageBackground
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
@@ -58,6 +57,8 @@ export default function LoginScreen() {
         }
       } catch (error) {
         console.error('Error checking biometrics:', error);
+        setBiometricAvailable(false);
+        setBiometricEnabled(false);
       } finally {
         setCheckingBiometrics(false);
       }
@@ -92,7 +93,13 @@ export default function LoginScreen() {
   };
   
   const handleBiometricLogin = async () => {
-    if (!biometricAvailable || !biometricEnabled) return;
+    if (!biometricAvailable || !biometricEnabled) {
+      Alert.alert(
+        'Biometric Login Not Available',
+        'Please enable biometric login in the security settings.'
+      );
+      return;
+    }
     
     try {
       const success = await authenticateWithBiometrics(`Sign in with ${biometricType}`);
@@ -104,6 +111,11 @@ export default function LoginScreen() {
           password: 'password',
           rememberMe: true
         });
+      } else {
+        Alert.alert(
+          'Authentication Failed',
+          'Biometric authentication failed. Please try again or use your password.'
+        );
       }
     } catch (error) {
       console.error('Biometric authentication error:', error);

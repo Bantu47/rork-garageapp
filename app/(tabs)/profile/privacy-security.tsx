@@ -28,6 +28,7 @@ export default function PrivacySecurityScreen() {
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [biometricType, setBiometricType] = useState('None');
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   
   // Load saved settings
   useEffect(() => {
@@ -56,6 +57,10 @@ export default function PrivacySecurityScreen() {
         }
       } catch (error) {
         console.error('Error loading settings:', error);
+        Alert.alert(
+          "Error Loading Settings",
+          "There was a problem loading your settings. Default settings will be used."
+        );
       } finally {
         setIsLoading(false);
       }
@@ -66,6 +71,8 @@ export default function PrivacySecurityScreen() {
   
   const handleSave = async () => {
     try {
+      setIsSaving(true);
+      
       // Save settings to AsyncStorage
       const settings = {
         locationTracking,
@@ -83,37 +90,54 @@ export default function PrivacySecurityScreen() {
         [{ text: "OK" }]
       );
     } catch (error) {
+      console.error('Error saving settings:', error);
       Alert.alert(
         "Error",
         "Failed to save settings. Please try again.",
         [{ text: "OK" }]
       );
+    } finally {
+      setIsSaving(false);
     }
   };
   
   const handleBiometricToggle = async (value: boolean) => {
     if (value && biometricAvailable) {
-      // If turning on, authenticate first
-      const success = await authenticateWithBiometrics(
-        `Authenticate to enable ${biometricType} login`
-      );
-      
-      if (success) {
-        setBiometricLogin(true);
-        Alert.alert(
-          "Biometric Login Enabled",
-          `You can now use ${biometricType} to log in to the app.`
+      try {
+        // If turning on, authenticate first
+        const success = await authenticateWithBiometrics(
+          `Authenticate to enable ${biometricType} login`
         );
-      } else {
-        // Authentication failed, don't enable
+        
+        if (success) {
+          setBiometricLogin(true);
+          Alert.alert(
+            "Biometric Login Enabled",
+            `You can now use ${biometricType} to log in to the app.`
+          );
+        } else {
+          // Authentication failed, don't enable
+          Alert.alert(
+            "Authentication Failed",
+            "Biometric authentication failed. Please try again."
+          );
+        }
+      } catch (error) {
+        console.error('Error during biometric authentication:', error);
         Alert.alert(
-          "Authentication Failed",
-          "Biometric authentication failed. Please try again."
+          "Authentication Error",
+          "There was a problem with biometric authentication. Please try again later."
         );
       }
-    } else {
+    } else if (!value) {
       // If turning off, just disable
       setBiometricLogin(false);
+    } else {
+      // If biometric is not available
+      Alert.alert(
+        "Biometric Not Available",
+        "Your device doesn't support biometric authentication or you haven't set it up in your device settings."
+      );
     }
   };
   
@@ -323,9 +347,16 @@ export default function PrivacySecurityScreen() {
           <TouchableOpacity 
             style={styles.saveButton}
             onPress={handleSave}
+            disabled={isSaving}
           >
-            <Save size={20} color="white" />
-            <Text style={styles.saveButtonText}>Save Settings</Text>
+            {isSaving ? (
+              <ActivityIndicator color="white" size="small" />
+            ) : (
+              <>
+                <Save size={20} color="white" />
+                <Text style={styles.saveButtonText}>Save Settings</Text>
+              </>
+            )}
           </TouchableOpacity>
           
           <View style={styles.dangerZone}>

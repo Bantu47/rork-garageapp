@@ -36,12 +36,14 @@ export const getBiometricType = async (): Promise<string> => {
       return 'Face ID';
     } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
       return 'Fingerprint';
+    } else if (types.includes(LocalAuthentication.AuthenticationType.IRIS)) {
+      return 'Iris';
     } else {
-      return 'None';
+      return 'Biometric';
     }
   } catch (error) {
     console.error('Error getting biometric type:', error);
-    return 'None';
+    return 'Biometric';
   }
 };
 
@@ -52,14 +54,23 @@ export const authenticateWithBiometrics = async (
   promptMessage: string = 'Authenticate to continue'
 ): Promise<boolean> => {
   if (Platform.OS === 'web') {
+    console.log('Biometric authentication not available on web');
     return false;
   }
   
   try {
+    // First check if biometrics are available
+    const available = await isBiometricAvailable();
+    if (!available) {
+      console.log('Biometric authentication not available on this device');
+      return false;
+    }
+    
     const result = await LocalAuthentication.authenticateAsync({
       promptMessage,
       fallbackLabel: 'Use passcode',
       disableDeviceFallback: false,
+      cancelLabel: 'Cancel',
     });
     
     return result.success;
