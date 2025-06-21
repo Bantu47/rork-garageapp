@@ -111,16 +111,18 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
-      <trpc.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaProvider>
-            <AuthenticationGuard>
-              <RootLayoutNav />
-            </AuthenticationGuard>
-          </SafeAreaProvider>
-        </QueryClientProvider>
-      </trpc.Provider>
+      <>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <trpc.Provider client={trpcClient} queryClient={queryClient}>
+          <QueryClientProvider client={queryClient}>
+            <SafeAreaProvider>
+              <AuthenticationGuard>
+                <RootLayoutNav />
+              </AuthenticationGuard>
+            </SafeAreaProvider>
+          </QueryClientProvider>
+        </trpc.Provider>
+      </>
     </ErrorBoundary>
   );
 }
