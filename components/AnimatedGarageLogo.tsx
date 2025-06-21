@@ -32,5 +32,8 @@ const styles = StyleSheet.create({
   logoText: {
     fontWeight: 'bold',
     letterSpacing: 1,
+    textAlign: 'center',
+    flexWrap: 'nowrap',
+    flexShrink: 0,
   }
 });
