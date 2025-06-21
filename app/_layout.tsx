@@ -111,7 +111,6 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
-      {/* Set status bar to light content (white icons) on black background */}
       <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
