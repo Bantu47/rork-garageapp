@@ -94,7 +94,7 @@ export default function ProfileScreen() {
             <View style={styles.subscriptionContent}>
               <CreditCard size={24} color="white" />
               <View style={styles.subscriptionTextContainer}>
-                <Text style={styles.subscriptionTitle}>Subscribe via Stripe</Text>
+                <Text style={styles.subscriptionTitle}>Subscribe</Text>
                 <Text style={styles.subscriptionDescription}>
                   Add unlimited vehicles for just R10/month
                 </Text>

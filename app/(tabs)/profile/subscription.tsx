@@ -143,7 +143,7 @@ export default function SubscriptionScreen() {
                   style={styles.subscribeButton}
                   onPress={handleSubscribe}
                 >
-                  <Text style={styles.subscribeButtonText}>Subscribe with Payfast</Text>
+                  <Text style={styles.subscribeButtonText}>Subscribe</Text>
                 </TouchableOpacity>
                 
                 <View style={styles.payfastLogoContainer}>
