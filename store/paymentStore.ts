@@ -10,7 +10,7 @@ interface PaymentStore extends PaymentState {
   resetFreeVehicles: () => void; // For testing purposes
 }
 
-const FREE_VEHICLE_LIMIT = 3;
+const FREE_VEHICLE_LIMIT = 2; // Changed from 3 to 2
 const MONTHLY_SUBSCRIPTION_PRICE = 10; // R10 per month
 
 export const usePaymentStore = create<PaymentStore>()(

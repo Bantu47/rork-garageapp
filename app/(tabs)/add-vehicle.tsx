@@ -195,7 +195,7 @@ export default function AddVehicleScreen() {
           {!canAddMoreVehicles && (
             <View style={styles.warningBanner}>
               <Text style={styles.warningText}>
-                You've reached the limit of 3 free vehicles. Subscribe for R10/month to add unlimited vehicles.
+                You've reached the limit of 2 free vehicles. Subscribe for R10/month to add unlimited vehicles.
               </Text>
               <TouchableOpacity 
                 style={styles.purchaseButton}

@@ -160,22 +160,22 @@ export default function SubscriptionScreen() {
           <View style={styles.freeVehiclesCard}>
             <Text style={styles.freeVehiclesTitle}>Free Plan</Text>
             <Text style={styles.freeVehiclesDescription}>
-              You can add up to 3 vehicles with the free plan
+              You can add up to 2 vehicles with the free plan
             </Text>
             <View style={styles.freeVehiclesStatus}>
               <Text style={styles.freeVehiclesText}>
-                {vehicles.length} of 3 vehicles used
+                {vehicles.length} of 2 vehicles used
               </Text>
               <View style={styles.progressBarContainer}>
                 <View 
                   style={[
                     styles.progressBar, 
-                    { width: `${Math.min((vehicles.length / 3) * 100, 100)}%` }
+                    { width: `${Math.min((vehicles.length / 2) * 100, 100)}%` }
                   ]} 
                 />
               </View>
               <Text style={styles.freeVehiclesRemaining}>
-                {Math.max(3 - vehicles.length, 0)} free slots remaining
+                {Math.max(2 - vehicles.length, 0)} free slots remaining
               </Text>
             </View>
           </View>
