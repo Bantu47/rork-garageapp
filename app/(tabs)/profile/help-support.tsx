@@ -27,7 +27,7 @@ const faqData = [
   },
   {
     question: "What is the subscription model?",
-    answer: "The app allows you to add up to 3 vehicles for free. After that, you'll need to subscribe for R10 per month to add unlimited vehicles to your garage. The subscription is billed monthly and can be canceled at any time. You'll maintain access until the end of your billing period."
+    answer: "The app allows you to add up to 2 vehicles for free. After that, you'll need to subscribe for R10 per month to add unlimited vehicles to your garage. The subscription is billed monthly and can be canceled at any time. You'll maintain access until the end of your billing period."
   },
   {
     question: "How do I change my password?",
@@ -177,7 +177,7 @@ export default function HelpSupportScreen() {
               
               <Text style={styles.legalSectionTitle}>4. Subscription and Payments</Text>
               <Text style={styles.legalText}>
-                The free version of Garage App allows users to add up to 3 vehicles. For additional vehicles, 
+                The free version of Garage App allows users to add up to 2 vehicles. For additional vehicles, 
                 users must subscribe to our premium service at a cost of R10 per month. Subscriptions are 
                 automatically renewed unless cancelled. Payments are processed securely through Stripe.
               </Text>
