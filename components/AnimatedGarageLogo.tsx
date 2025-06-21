@@ -13,7 +13,7 @@ interface AnimatedGarageLogoProps {
 export default function AnimatedGarageLogo({ 
   size = 150, 
   color = 'white',
-  showText = true,
+  showText = false,
   textSize = 24
 }: AnimatedGarageLogoProps) {
   const iconSize = size * 0.6;
