@@ -3,7 +3,7 @@ import { useFonts } from "expo-font";
 import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
-import { Platform, View, Text } from "react-native";
+import { Platform, View, Text, StatusBar } from "react-native";
 import { ErrorBoundary } from "./error-boundary";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import colors from "@/constants/colors";
@@ -111,6 +111,8 @@ export default function RootLayout() {
 
   return (
     <ErrorBoundary>
+      {/* Set status bar to light content (white icons) on black background */}
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <SafeAreaProvider>
