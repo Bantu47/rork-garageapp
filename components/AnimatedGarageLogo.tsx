@@ -17,7 +17,17 @@ export default function AnimatedGarageLogo({
 }: AnimatedGarageLogoProps) {
   return (
     <View style={[styles.container, { width: size }]}>
-      <Text style={[styles.logoText, { fontSize: textSize, color: color }]}>
+      <Text 
+        style={[
+          styles.logoText, 
+          { 
+            fontSize: textSize, 
+            color: color,
+            width: 'auto' 
+          }
+        ]}
+        numberOfLines={1}
+      >
         GARAGE
       </Text>
     </View>
@@ -33,7 +43,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 1,
     textAlign: 'center',
-    flexWrap: 'nowrap',
-    flexShrink: 0,
+    whiteSpace: 'nowrap',
+    overflow: 'visible',
   }
 });
