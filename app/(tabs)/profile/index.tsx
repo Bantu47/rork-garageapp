@@ -15,7 +15,7 @@ import { usePaymentStore } from '@/store/paymentStore';
 import { useVehicleStore } from '@/store/vehicleStore';
 import colors from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ChevronRight, CreditCard, Star } from 'lucide-react-native';
+import { ChevronRight, CreditCard, LogOut, Star } from 'lucide-react-native';
 
 export default function ProfileScreen() {
   const { user, logout } = useAuthStore();
@@ -146,18 +146,20 @@ export default function ProfileScreen() {
             <Text style={styles.menuTitle}>Get Support</Text>
             <ChevronRight size={24} color="#666666" />
           </TouchableOpacity>
+          
+          {/* Added logout option in the menu */}
+          <TouchableOpacity 
+            style={[styles.menuItem, styles.logoutMenuItem]}
+            onPress={handleLogout}
+          >
+            <Text style={styles.logoutMenuTitle}>Sign Out</Text>
+            <LogOut size={24} color={colors.danger} />
+          </TouchableOpacity>
         </View>
         
         <View style={styles.userInfoContainer}>
           <Text style={styles.userEmail}>{user.email}</Text>
         </View>
-        
-        <TouchableOpacity 
-          style={styles.signOutButton}
-          onPress={handleLogout}
-        >
-          <Text style={styles.signOutButtonText}>Sign Out</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -285,6 +287,15 @@ const styles = StyleSheet.create({
   menuTitle: {
     fontSize: 18,
     color: colors.text,
+  },
+  logoutMenuItem: {
+    borderBottomWidth: 0,
+    marginTop: 8,
+  },
+  logoutMenuTitle: {
+    fontSize: 18,
+    color: colors.danger,
+    fontWeight: 'bold',
   },
   userInfoContainer: {
     alignItems: 'center',
