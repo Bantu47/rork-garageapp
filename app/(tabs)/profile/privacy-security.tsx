@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   StyleSheet, 
   View, 
@@ -7,11 +7,14 @@ import {
   ScrollView, 
   TouchableOpacity,
   Alert,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import colors from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Shield, Lock, Eye, Fingerprint, Save } from 'lucide-react-native';
+import { isBiometricAvailable, getBiometricType, authenticateWithBiometrics } from '@/utils/biometricAuth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function PrivacySecurityScreen() {
   // Privacy settings
@@ -22,14 +25,136 @@ export default function PrivacySecurityScreen() {
   // Security settings
   const [biometricLogin, setBiometricLogin] = useState(false);
   const [twoFactorAuth, setTwoFactorAuth] = useState(false);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricType, setBiometricType] = useState('None');
+  const [isLoading, setIsLoading] = useState(true);
   
-  const handleSave = () => {
-    // In a real app, this would save privacy and security settings
-    Alert.alert(
-      "Settings Saved",
-      "Your privacy and security settings have been updated.",
-      [{ text: "OK" }]
-    );
+  // Load saved settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setIsLoading(true);
+        
+        // Check biometric availability
+        const available = await isBiometricAvailable();
+        setBiometricAvailable(available);
+        
+        if (available) {
+          const type = await getBiometricType();
+          setBiometricType(type);
+        }
+        
+        // Load saved settings from AsyncStorage
+        const savedSettings = await AsyncStorage.getItem('security-settings');
+        if (savedSettings) {
+          const settings = JSON.parse(savedSettings);
+          setLocationTracking(settings.locationTracking || false);
+          setDataCollection(settings.dataCollection || true);
+          setShareAnalytics(settings.shareAnalytics || true);
+          setBiometricLogin(settings.biometricLogin || false);
+          setTwoFactorAuth(settings.twoFactorAuth || false);
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadSettings();
+  }, []);
+  
+  const handleSave = async () => {
+    try {
+      // Save settings to AsyncStorage
+      const settings = {
+        locationTracking,
+        dataCollection,
+        shareAnalytics,
+        biometricLogin,
+        twoFactorAuth
+      };
+      
+      await AsyncStorage.setItem('security-settings', JSON.stringify(settings));
+      
+      Alert.alert(
+        "Settings Saved",
+        "Your privacy and security settings have been updated.",
+        [{ text: "OK" }]
+      );
+    } catch (error) {
+      Alert.alert(
+        "Error",
+        "Failed to save settings. Please try again.",
+        [{ text: "OK" }]
+      );
+    }
+  };
+  
+  const handleBiometricToggle = async (value: boolean) => {
+    if (value && biometricAvailable) {
+      // If turning on, authenticate first
+      const success = await authenticateWithBiometrics(
+        `Authenticate to enable ${biometricType} login`
+      );
+      
+      if (success) {
+        setBiometricLogin(true);
+        Alert.alert(
+          "Biometric Login Enabled",
+          `You can now use ${biometricType} to log in to the app.`
+        );
+      } else {
+        // Authentication failed, don't enable
+        Alert.alert(
+          "Authentication Failed",
+          "Biometric authentication failed. Please try again."
+        );
+      }
+    } else {
+      // If turning off, just disable
+      setBiometricLogin(false);
+    }
+  };
+  
+  const handleTwoFactorToggle = async (value: boolean) => {
+    if (value) {
+      // Simulate 2FA setup
+      Alert.alert(
+        "Set Up Two-Factor Authentication",
+        "In a real app, this would guide you through setting up 2FA with an authenticator app or SMS.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { 
+            text: "Continue", 
+            onPress: () => {
+              // Simulate successful setup
+              setTimeout(() => {
+                setTwoFactorAuth(true);
+                Alert.alert(
+                  "Two-Factor Authentication Enabled",
+                  "Your account is now protected with two-factor authentication."
+                );
+              }, 1000);
+            }
+          }
+        ]
+      );
+    } else {
+      // Confirm before disabling
+      Alert.alert(
+        "Disable Two-Factor Authentication",
+        "Are you sure you want to disable two-factor authentication? This will make your account less secure.",
+        [
+          { text: "Cancel", style: "cancel" },
+          { 
+            text: "Disable", 
+            style: "destructive",
+            onPress: () => setTwoFactorAuth(false)
+          }
+        ]
+      );
+    }
   };
   
   const handleChangePassword = () => {
@@ -39,6 +164,17 @@ export default function PrivacySecurityScreen() {
       [{ text: "OK" }]
     );
   };
+  
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container} edges={['bottom']}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color={colors.primary} />
+          <Text style={styles.loadingText}>Loading settings...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
   
   return (
     <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -126,18 +262,24 @@ export default function PrivacySecurityScreen() {
                   <Fingerprint size={20} color={colors.primary} />
                 </View>
                 <View>
-                  <Text style={styles.optionLabel}>Biometric Login</Text>
+                  <Text style={styles.optionLabel}>
+                    {biometricType} Login
+                    {!biometricAvailable && " (Not Available)"}
+                  </Text>
                   <Text style={styles.optionDescription}>
-                    Use fingerprint or face recognition to login
+                    {biometricAvailable 
+                      ? `Use ${biometricType.toLowerCase()} to log in to the app`
+                      : "Your device doesn't support biometric authentication"}
                   </Text>
                 </View>
               </View>
               <Switch
                 value={biometricLogin}
-                onValueChange={setBiometricLogin}
+                onValueChange={handleBiometricToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={Platform.OS === 'ios' ? undefined : 'white'}
                 ios_backgroundColor={colors.border}
+                disabled={!biometricAvailable}
               />
             </View>
             
@@ -155,7 +297,7 @@ export default function PrivacySecurityScreen() {
               </View>
               <Switch
                 value={twoFactorAuth}
-                onValueChange={setTwoFactorAuth}
+                onValueChange={handleTwoFactorToggle}
                 trackColor={{ false: colors.border, true: colors.primary }}
                 thumbColor={Platform.OS === 'ios' ? undefined : 'white'}
                 ios_backgroundColor={colors.border}
@@ -229,6 +371,16 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 16,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: colors.text,
   },
   section: {
     backgroundColor: colors.card,

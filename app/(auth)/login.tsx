@@ -16,8 +16,10 @@ import { useRouter } from 'expo-router';
 import { useAuthStore } from '@/store/authStore';
 import colors from '@/constants/colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Eye, EyeOff, Mail, Lock } from 'lucide-react-native';
+import { Eye, EyeOff, Mail, Lock, Fingerprint } from 'lucide-react-native';
 import AnimatedGarageLogo from '@/components/AnimatedGarageLogo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { isBiometricAvailable, authenticateWithBiometrics, getBiometricType } from '@/utils/biometricAuth';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -27,6 +29,42 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('password'); // Pre-filled for demo
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [biometricType, setBiometricType] = useState('');
+  const [checkingBiometrics, setCheckingBiometrics] = useState(true);
+  
+  // Check if biometric login is enabled
+  useEffect(() => {
+    const checkBiometrics = async () => {
+      try {
+        setCheckingBiometrics(true);
+        
+        // Check if biometric is available on the device
+        const available = await isBiometricAvailable();
+        setBiometricAvailable(available);
+        
+        if (available) {
+          // Get the type of biometric authentication
+          const type = await getBiometricType();
+          setBiometricType(type);
+          
+          // Check if biometric login is enabled in settings
+          const settings = await AsyncStorage.getItem('security-settings');
+          if (settings) {
+            const parsedSettings = JSON.parse(settings);
+            setBiometricEnabled(parsedSettings.biometricLogin || false);
+          }
+        }
+      } catch (error) {
+        console.error('Error checking biometrics:', error);
+      } finally {
+        setCheckingBiometrics(false);
+      }
+    };
+    
+    checkBiometrics();
+  }, []);
   
   // Redirect if already authenticated
   useEffect(() => {
@@ -51,6 +89,29 @@ export default function LoginScreen() {
     }
     
     await login({ email, password, rememberMe });
+  };
+  
+  const handleBiometricLogin = async () => {
+    if (!biometricAvailable || !biometricEnabled) return;
+    
+    try {
+      const success = await authenticateWithBiometrics(`Sign in with ${biometricType}`);
+      
+      if (success) {
+        // If authentication is successful, log in with demo credentials
+        await login({ 
+          email: 'demo@example.com', 
+          password: 'password',
+          rememberMe: true
+        });
+      }
+    } catch (error) {
+      console.error('Biometric authentication error:', error);
+      Alert.alert(
+        'Authentication Failed',
+        'Biometric authentication failed. Please try again or use your password.'
+      );
+    }
   };
   
   const goToRegister = () => {
@@ -131,6 +192,18 @@ export default function LoginScreen() {
                 <Text style={styles.loginButtonText}>Sign In</Text>
               )}
             </TouchableOpacity>
+            
+            {biometricAvailable && biometricEnabled && !checkingBiometrics && (
+              <TouchableOpacity 
+                style={styles.biometricButton}
+                onPress={handleBiometricLogin}
+              >
+                <Fingerprint size={20} color={colors.primary} />
+                <Text style={styles.biometricButtonText}>
+                  Sign in with {biometricType}
+                </Text>
+              </TouchableOpacity>
+            )}
             
             <View style={styles.registerContainer}>
               <Text style={styles.registerText}>Don't have an account?</Text>
@@ -246,6 +319,23 @@ const styles = StyleSheet.create({
     color: colors.buttonText,
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  biometricButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'transparent',
+    borderWidth: 1,
+    borderColor: colors.primary,
+    borderRadius: 12,
+    height: 48,
+    marginTop: 12,
+  },
+  biometricButtonText: {
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
   },
   registerContainer: {
     flexDirection: 'row',
