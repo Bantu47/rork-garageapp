@@ -53,6 +53,7 @@ function AuthenticationGuard({ children }: { children: React.ReactNode }) {
   const segments = useSegments();
   const router = useRouter();
   const isMounted = useRef(false);
+  const initialCheckDone = useRef(false);
 
   useEffect(() => {
     // Set mounted flag to true
@@ -69,12 +70,17 @@ function AuthenticationGuard({ children }: { children: React.ReactNode }) {
     
     const inAuthGroup = segments[0] === "(auth)";
     
-    if (!isAuthenticated && !inAuthGroup) {
-      // Redirect to the login page if not authenticated and not already in auth group
-      router.replace("/login");
-    } else if (isAuthenticated && inAuthGroup) {
-      // Redirect to the main app if authenticated but still in auth group
-      router.replace("/(tabs)");
+    // Only perform the navigation check once after initial mount
+    if (!initialCheckDone.current) {
+      initialCheckDone.current = true;
+      
+      if (!isAuthenticated && !inAuthGroup) {
+        // Redirect to the login page if not authenticated and not already in auth group
+        router.replace("/login");
+      } else if (isAuthenticated && inAuthGroup) {
+        // Redirect to the main app if authenticated but still in auth group
+        router.replace("/(tabs)");
+      }
     }
   }, [isAuthenticated, segments, router]);
 
