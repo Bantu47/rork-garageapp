@@ -7,7 +7,8 @@ import {
   TouchableOpacity,
   FlatList,
   Alert,
-  Image
+  Image,
+  Platform
 } from 'react-native';
 import { usePaymentStore } from '@/store/paymentStore';
 import { useVehicleStore } from '@/store/vehicleStore';
@@ -133,15 +134,17 @@ export default function SubscriptionScreen() {
                 <TouchableOpacity 
                   style={styles.cancelButton}
                   onPress={handleCancelSubscription}
+                  activeOpacity={0.8}
                 >
                   <Text style={styles.cancelButtonText}>Cancel Subscription</Text>
                 </TouchableOpacity>
               </View>
             ) : (
-              <View>
+              <View style={styles.subscribeContainer}>
                 <TouchableOpacity 
                   style={styles.subscribeButton}
                   onPress={handleSubscribe}
+                  activeOpacity={0.8}
                 >
                   <Text style={styles.subscribeButtonText}>Subscribe</Text>
                 </TouchableOpacity>
@@ -230,6 +233,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     borderWidth: 1,
     borderColor: '#FFD700',
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   premiumText: {
     color: '#FFD700',
@@ -243,6 +247,11 @@ const styles = StyleSheet.create({
     padding: 24,
     marginBottom: 16,
     alignItems: 'center',
+    elevation: Platform.OS === 'android' ? 3 : 0,
+    shadowColor: Platform.OS === 'ios' ? '#000' : undefined,
+    shadowOffset: Platform.OS === 'ios' ? { width: 0, height: 2 } : undefined,
+    shadowOpacity: Platform.OS === 'ios' ? 0.1 : undefined,
+    shadowRadius: Platform.OS === 'ios' ? 3 : undefined,
   },
   subscriptionTitle: {
     fontSize: 24,
@@ -305,11 +314,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   cancelButtonText: {
     color: 'white',
     fontSize: 16,
     fontWeight: '600',
+  },
+  subscribeContainer: {
+    width: '100%',
+    alignItems: 'center',
   },
   subscribeButton: {
     backgroundColor: colors.primary,
@@ -318,6 +332,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
     width: '100%',
     alignItems: 'center',
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   subscribeButtonText: {
     color: 'white',
@@ -337,6 +352,11 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 24,
     marginBottom: 16,
+    elevation: Platform.OS === 'android' ? 2 : 0,
+    shadowColor: Platform.OS === 'ios' ? '#000' : undefined,
+    shadowOffset: Platform.OS === 'ios' ? { width: 0, height: 1 } : undefined,
+    shadowOpacity: Platform.OS === 'ios' ? 0.1 : undefined,
+    shadowRadius: Platform.OS === 'ios' ? 2 : undefined,
   },
   freeVehiclesTitle: {
     fontSize: 20,
@@ -378,6 +398,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
+    elevation: Platform.OS === 'android' ? 2 : 0,
+    shadowColor: Platform.OS === 'ios' ? '#000' : undefined,
+    shadowOffset: Platform.OS === 'ios' ? { width: 0, height: 1 } : undefined,
+    shadowOpacity: Platform.OS === 'ios' ? 0.1 : undefined,
+    shadowRadius: Platform.OS === 'ios' ? 2 : undefined,
   },
   transactionsTitle: {
     fontSize: 18,

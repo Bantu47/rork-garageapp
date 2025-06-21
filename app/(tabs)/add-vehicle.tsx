@@ -9,7 +9,8 @@ import {
   Platform,
   KeyboardAvoidingView,
   Alert,
-  Image
+  Image,
+  Pressable
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useVehicleStore } from '@/store/vehicleStore';
@@ -182,7 +183,7 @@ export default function AddVehicleScreen() {
   return (
     <SafeAreaView style={styles.container} edges={['right', 'left']}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardAvoid}
       >
         <ScrollView 
@@ -200,6 +201,7 @@ export default function AddVehicleScreen() {
               <TouchableOpacity 
                 style={styles.purchaseButton}
                 onPress={() => setPaymentModalVisible(true)}
+                activeOpacity={0.8}
               >
                 <Text style={styles.purchaseButtonText}>Subscribe with Payfast</Text>
               </TouchableOpacity>
@@ -208,18 +210,21 @@ export default function AddVehicleScreen() {
           
           <View style={styles.imageSection}>
             {image ? (
-              <Image source={{ uri: image }} style={styles.previewImage} />
+              <Pressable onPress={pickImage}>
+                <Image source={{ uri: image }} style={styles.previewImage} />
+              </Pressable>
             ) : (
-              <View style={styles.imagePlaceholder}>
+              <Pressable style={styles.imagePlaceholder} onPress={pickImage}>
                 <Upload size={40} color={colors.textLight} />
                 <Text style={styles.imagePlaceholderText}>Add vehicle image</Text>
-              </View>
+              </Pressable>
             )}
             
             <View style={styles.imageButtons}>
               <TouchableOpacity 
                 style={styles.imageButton}
                 onPress={pickImage}
+                activeOpacity={0.8}
               >
                 <Upload size={18} color="white" />
                 <Text style={styles.imageButtonText}>Gallery</Text>
@@ -228,6 +233,7 @@ export default function AddVehicleScreen() {
               <TouchableOpacity 
                 style={styles.imageButton}
                 onPress={takePhoto}
+                activeOpacity={0.8}
               >
                 <Camera size={18} color="white" />
                 <Text style={styles.imageButtonText}>Camera</Text>
@@ -387,6 +393,7 @@ export default function AddVehicleScreen() {
           <TouchableOpacity 
             style={styles.submitButton}
             onPress={handleSubmit}
+            activeOpacity={0.8}
           >
             <Text style={styles.submitButtonText}>Add Vehicle</Text>
           </TouchableOpacity>
@@ -442,6 +449,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 12,
     alignSelf: 'flex-start',
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   purchaseButtonText: {
     color: 'white',
@@ -453,13 +461,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   previewImage: {
-    width: '100%',
+    width: Platform.OS === 'android' ? 320 : '100%',
     height: 180,
     borderRadius: 12,
     marginBottom: 12,
   },
   imagePlaceholder: {
-    width: '100%',
+    width: Platform.OS === 'android' ? 320 : '100%',
     height: 180,
     borderRadius: 12,
     backgroundColor: colors.card,
@@ -487,6 +495,7 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   imageButtonText: {
     color: 'white',
@@ -516,6 +525,7 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: colors.text,
+    height: Platform.OS === 'android' ? 56 : 'auto',
   },
   inputError: {
     borderColor: colors.danger,
@@ -534,7 +544,7 @@ const styles = StyleSheet.create({
   dateIcon: {
     position: 'absolute',
     right: 12,
-    top: 12,
+    top: Platform.OS === 'android' ? 18 : 12,
   },
   textArea: {
     height: 100,
@@ -546,6 +556,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
+    elevation: Platform.OS === 'android' ? 3 : 0,
   },
   submitButtonText: {
     color: 'white',

@@ -11,7 +11,8 @@ import {
   Image,
   ScrollView,
   KeyboardAvoidingView,
-  Platform
+  Platform,
+  Pressable
 } from 'react-native';
 import { usePaymentStore } from '@/store/paymentStore';
 import colors from '@/constants/colors';
@@ -131,7 +132,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
   
   const renderPaymentDetails = () => (
     <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.keyboardAvoid}
     >
       <ScrollView style={styles.scrollView}>
@@ -220,19 +221,20 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
               />
             </View>
             
-            <View style={styles.saveCardContainer}>
-              <TouchableOpacity 
-                style={styles.saveCardCheckbox}
-                onPress={() => setSaveCard(!saveCard)}
-              >
+            <Pressable 
+              style={styles.saveCardContainer}
+              onPress={() => setSaveCard(!saveCard)}
+              android_ripple={{ color: 'rgba(0, 0, 0, 0.1)', borderless: true }}
+            >
+              <View style={styles.saveCardCheckbox}>
                 {saveCard ? (
                   <CheckCircle size={20} color={colors.primary} />
                 ) : (
                   <View style={styles.uncheckedBox} />
                 )}
-              </TouchableOpacity>
+              </View>
               <Text style={styles.saveCardText}>Save card for future payments</Text>
-            </View>
+            </Pressable>
           </View>
           
           <View style={styles.securePaymentContainer}>
@@ -245,6 +247,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
           <TouchableOpacity 
             style={styles.payButton}
             onPress={handlePayment}
+            activeOpacity={0.8}
           >
             <Text style={styles.payButtonText}>Pay R10.00</Text>
           </TouchableOpacity>
@@ -308,6 +311,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
       <TouchableOpacity 
         style={styles.doneButton}
         onPress={handleSuccess}
+        activeOpacity={0.8}
       >
         <Text style={styles.doneButtonText}>Done</Text>
       </TouchableOpacity>
@@ -320,11 +324,16 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
       transparent={true}
       animationType="fade"
       onRequestClose={handleClose}
+      statusBarTranslucent={true}
     >
-      <View style={styles.modalOverlay}>
-        <View style={[
+      <Pressable 
+        style={styles.modalOverlay}
+        onPress={paymentStep !== PaymentStep.PROCESSING ? handleClose : undefined}
+      >
+        <Pressable style={[
           styles.modalContainer,
-          paymentStep === PaymentStep.DETAILS && styles.detailsContainer
+          paymentStep === PaymentStep.DETAILS && styles.detailsContainer,
+          Platform.OS === 'android' && styles.androidModalContainer
         ]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
@@ -333,7 +342,11 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
               {paymentStep === PaymentStep.CONFIRMATION && "Payment Complete"}
             </Text>
             {paymentStep !== PaymentStep.PROCESSING && (
-              <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
+              <TouchableOpacity 
+                onPress={handleClose} 
+                style={styles.closeButton}
+                hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+              >
                 <X size={24} color={colors.text} />
               </TouchableOpacity>
             )}
@@ -342,8 +355,8 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
           {paymentStep === PaymentStep.DETAILS && renderPaymentDetails()}
           {paymentStep === PaymentStep.PROCESSING && renderProcessing()}
           {paymentStep === PaymentStep.CONFIRMATION && renderConfirmation()}
-        </View>
-      </View>
+        </Pressable>
+      </Pressable>
     </Modal>
   );
 }
@@ -367,8 +380,12 @@ const styles = StyleSheet.create({
     elevation: 5,
     maxHeight: '90%',
   },
+  androidModalContainer: {
+    elevation: 24,
+    maxWidth: 400,
+  },
   detailsContainer: {
-    maxHeight: '80%',
+    maxHeight: Platform.OS === 'ios' ? '80%' : '85%',
   },
   keyboardAvoid: {
     flex: 1,
@@ -383,6 +400,8 @@ const styles = StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
+    backgroundColor: Platform.OS === 'android' ? colors.card : undefined,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   modalTitle: {
     fontSize: 18,
@@ -459,12 +478,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 12,
     backgroundColor: colors.inputBackground,
+    height: Platform.OS === 'android' ? 56 : 50,
   },
   cardNumberInput: {
     flex: 1,
-    height: 50,
+    height: Platform.OS === 'android' ? 56 : 50,
     fontSize: 16,
     color: colors.text,
+    paddingVertical: Platform.OS === 'android' ? 8 : 0,
   },
   cardBrandIcon: {
     width: 60,
@@ -483,11 +504,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginRight: 8,
     backgroundColor: colors.inputBackground,
+    height: Platform.OS === 'android' ? 56 : 50,
   },
   cardExpiryInput: {
-    height: 50,
+    height: Platform.OS === 'android' ? 56 : 50,
     fontSize: 16,
     color: colors.text,
+    paddingVertical: Platform.OS === 'android' ? 8 : 0,
   },
   cardCvcContainer: {
     flex: 1,
@@ -497,11 +520,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginLeft: 8,
     backgroundColor: colors.inputBackground,
+    height: Platform.OS === 'android' ? 56 : 50,
   },
   cardCvcInput: {
-    height: 50,
+    height: Platform.OS === 'android' ? 56 : 50,
     fontSize: 16,
     color: colors.text,
+    paddingVertical: Platform.OS === 'android' ? 8 : 0,
   },
   cardNameContainer: {
     borderWidth: 1,
@@ -510,19 +535,26 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     marginBottom: 16,
     backgroundColor: colors.inputBackground,
+    height: Platform.OS === 'android' ? 56 : 50,
   },
   cardNameInput: {
-    height: 50,
+    height: Platform.OS === 'android' ? 56 : 50,
     fontSize: 16,
     color: colors.text,
+    paddingVertical: Platform.OS === 'android' ? 8 : 0,
   },
   saveCardContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
+    paddingVertical: 8,
   },
   saveCardCheckbox: {
     marginRight: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 24,
+    height: 24,
   },
   uncheckedBox: {
     width: 20,
@@ -552,6 +584,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginBottom: 16,
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   payButtonText: {
     color: 'white',
@@ -649,6 +682,7 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     width: '100%',
+    elevation: Platform.OS === 'android' ? 2 : 0,
   },
   doneButtonText: {
     color: 'white',
