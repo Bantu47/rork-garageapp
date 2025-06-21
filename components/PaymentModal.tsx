@@ -94,7 +94,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
     setIsProcessing(true);
     
     try {
-      // Simulate API call to Stripe
+      // Simulate API call to Payfast
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       // Process the subscription
@@ -176,7 +176,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
                 maxLength={19} // 16 digits + 3 spaces
               />
               <Image 
-                source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Visa_Inc._logo.svg/1200px-Visa_Inc._logo.svg.png' }} 
+                source={{ uri: 'https://www.payfast.co.za/assets/images/payfast-logo.svg' }} 
                 style={styles.cardBrandIcon} 
                 resizeMode="contain"
               />
@@ -249,11 +249,11 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
             <Text style={styles.payButtonText}>Pay R10.00</Text>
           </TouchableOpacity>
           
-          <View style={styles.stripeContainer}>
+          <View style={styles.payfastContainer}>
             <Text style={styles.poweredByText}>Powered by</Text>
             <Image 
-              source={{ uri: 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Stripe_Logo%2C_revised_2016.svg/2560px-Stripe_Logo%2C_revised_2016.svg.png' }} 
-              style={styles.stripeLogo} 
+              source={{ uri: 'https://www.payfast.co.za/assets/images/payfast-logo.svg' }} 
+              style={styles.payfastLogo} 
               resizeMode="contain"
             />
           </View>
@@ -328,7 +328,7 @@ export default function PaymentModal({ visible, onClose, onSuccess }: PaymentMod
         ]}>
           <View style={styles.modalHeader}>
             <Text style={styles.modalTitle}>
-              {paymentStep === PaymentStep.DETAILS && "Subscription Payment"}
+              {paymentStep === PaymentStep.DETAILS && "Payfast Payment"}
               {paymentStep === PaymentStep.PROCESSING && "Processing"}
               {paymentStep === PaymentStep.CONFIRMATION && "Payment Complete"}
             </Text>
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   cardBrandIcon: {
-    width: 40,
+    width: 60,
     height: 25,
   },
   cardDetailsRow: {
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  stripeContainer: {
+  payfastContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -569,8 +569,8 @@ const styles = StyleSheet.create({
     color: colors.textLight,
     marginRight: 4,
   },
-  stripeLogo: {
-    width: 60,
+  payfastLogo: {
+    width: 80,
     height: 25,
   },
   disclaimer: {

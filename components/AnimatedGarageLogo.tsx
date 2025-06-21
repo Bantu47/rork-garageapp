@@ -10,10 +10,10 @@ interface AnimatedGarageLogoProps {
 }
 
 export default function AnimatedGarageLogo({ 
-  size = 100, 
+  size = 150, 
   color = 'white',
   showText = true,
-  textSize = 36
+  textSize = 42
 }: AnimatedGarageLogoProps) {
   return (
     <View style={[styles.container, { width: size * 2 }]}>

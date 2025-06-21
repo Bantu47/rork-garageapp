@@ -6,7 +6,8 @@ import {
   ScrollView, 
   TouchableOpacity,
   FlatList,
-  Alert
+  Alert,
+  Image
 } from 'react-native';
 import { usePaymentStore } from '@/store/paymentStore';
 import { useVehicleStore } from '@/store/vehicleStore';
@@ -137,12 +138,22 @@ export default function SubscriptionScreen() {
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity 
-                style={styles.subscribeButton}
-                onPress={handleSubscribe}
-              >
-                <Text style={styles.subscribeButtonText}>Subscribe Now</Text>
-              </TouchableOpacity>
+              <View>
+                <TouchableOpacity 
+                  style={styles.subscribeButton}
+                  onPress={handleSubscribe}
+                >
+                  <Text style={styles.subscribeButtonText}>Subscribe with Payfast</Text>
+                </TouchableOpacity>
+                
+                <View style={styles.payfastLogoContainer}>
+                  <Image 
+                    source={{ uri: 'https://www.payfast.co.za/assets/images/payfast-logo.svg' }} 
+                    style={styles.payfastLogo} 
+                    resizeMode="contain"
+                  />
+                </View>
+              </View>
             )}
           </View>
           
@@ -312,6 +323,14 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  payfastLogoContainer: {
+    alignItems: 'center',
+    marginTop: 16,
+  },
+  payfastLogo: {
+    width: 120,
+    height: 30,
   },
   freeVehiclesCard: {
     backgroundColor: colors.card,

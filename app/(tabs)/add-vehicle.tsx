@@ -201,7 +201,7 @@ export default function AddVehicleScreen() {
                 style={styles.purchaseButton}
                 onPress={() => setPaymentModalVisible(true)}
               >
-                <Text style={styles.purchaseButtonText}>Subscribe Now</Text>
+                <Text style={styles.purchaseButtonText}>Subscribe with Payfast</Text>
               </TouchableOpacity>
             </View>
           )}
