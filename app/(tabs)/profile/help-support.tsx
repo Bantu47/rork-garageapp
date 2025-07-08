@@ -186,7 +186,8 @@ export default function HelpSupportScreen() {
               <Text style={styles.legalText}>
                 You may cancel your subscription at any time through the app. Upon cancellation, you will 
                 continue to have access to premium features until the end of your current billing period. 
-                We do not provide refunds for partial subscription periods.
+                All payments are final and non-refundable. We do not provide refunds for any subscription 
+                fees, whether for partial or full billing periods, regardless of usage or circumstances.
               </Text>
               
               <Text style={styles.legalSectionTitle}>6. User Content</Text>
