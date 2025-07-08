@@ -179,7 +179,7 @@ export default function HelpSupportScreen() {
               <Text style={styles.legalText}>
                 The free version of Garage App allows users to add up to 2 vehicles. For additional vehicles, 
                 users must subscribe to our premium service at a cost of R10 per month. Subscriptions are 
-                automatically renewed unless cancelled. Payments are processed securely through Stripe.
+                automatically renewed unless cancelled. Payments are processed securely through secure payment systems.
               </Text>
               
               <Text style={styles.legalSectionTitle}>5. Cancellation and Refunds</Text>
